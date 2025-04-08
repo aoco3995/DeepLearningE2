@@ -1,0 +1,46 @@
+ubuntu@ip-10-0-24-233:~/Exam2-v6/Code$ python3 train_example.py 
+Epoch 0: 100%|███████████████████████████████████████████████████████████████████████████████████████| 11530/11530 [07:13<00:00, 26.62it/s, Test Loss: 0.28443]
+Epoch 0: 100%|█████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [00:30<00:00, 48.67it/s, Test Loss: 0.27379]
+Epoch 0:  Train f1_macro 0.15252 Train avg 0.07626 -  Test f1_macro 0.17210 Test avg 0.08605
+The model has been saved!
+Epoch 1: 100%|███████████████████████████████████████████████████████████████████████████████████████| 11530/11530 [07:34<00:00, 25.38it/s, Test Loss: 0.27360]
+Epoch 1: 100%|█████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [00:41<00:00, 35.50it/s, Test Loss: 0.26967]
+Epoch 1:  Train f1_macro 0.17584 Train avg 0.08792 -  Test f1_macro 0.18340 Test avg 0.09170
+The model has been saved!
+Epoch 2: 100%|███████████████████████████████████████████████████████████████████████████████████████| 11530/11530 [08:44<00:00, 21.97it/s, Test Loss: 0.26744]
+Epoch 2: 100%|█████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [00:46<00:00, 31.27it/s, Test Loss: 0.26418]
+Epoch 2:  Train f1_macro 0.18862 Train avg 0.09431 -  Test f1_macro 0.20679 Test avg 0.10339
+The model has been saved!
+Epoch 3: 100%|███████████████████████████████████████████████████████████████████████████████████████| 11530/11530 [09:21<00:00, 20.54it/s, Test Loss: 0.26167]
+Epoch 3: 100%|█████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [00:52<00:00, 27.96it/s, Test Loss: 0.25825]
+Epoch 3:  Train f1_macro 0.20077 Train avg 0.10038 -  Test f1_macro 0.20922 Test avg 0.10461
+The model has been saved!
+Epoch 4: 100%|███████████████████████████████████████████████████████████████████████████████████████| 11530/11530 [10:05<00:00, 19.03it/s, Test Loss: 0.25814]
+Epoch 4: 100%|█████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [00:58<00:00, 25.26it/s, Test Loss: 0.25534]
+Epoch 4:  Train f1_macro 0.20934 Train avg 0.10467 -  Test f1_macro 0.21611 Test avg 0.10805
+The model has been saved!
+Epoch 5: 100%|███████████████████████████████████████████████████████████████████████████████████████| 11530/11530 [10:50<00:00, 17.73it/s, Test Loss: 0.25557]
+Epoch 5: 100%|█████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [01:03<00:00, 22.99it/s, Test Loss: 0.25370]
+Epoch 5:  Train f1_macro 0.21644 Train avg 0.10822 -  Test f1_macro 0.21993 Test avg 0.10996
+The model has been saved!
+Epoch 6: 100%|███████████████████████████████████████████████████████████████████████████████████████| 11530/11530 [11:34<00:00, 16.59it/s, Test Loss: 0.25364]
+Epoch 6: 100%|█████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [01:09<00:00, 21.21it/s, Test Loss: 0.25197]
+Epoch 6:  Train f1_macro 0.22101 Train avg 0.11051 -  Test f1_macro 0.21452 Test avg 0.10726
+ubuntu@ip-10-0-24-233:~/Exam2-v6/Code$ python3 test_Valetudo.py --path /home/ubuntu/Exam2-v6 --split test
+Traceback (most recent call last):
+  File "/home/ubuntu/Exam2-v6/Code/test_Valetudo.py", line 415, in <module>
+    test_model(test_ds, list_of_metrics, list_of_agg, pretrained=False)
+  File "/home/ubuntu/Exam2-v6/Code/test_Valetudo.py", line 179, in test_model
+    model, criterion  = model_definition(pretrained)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ubuntu/Exam2-v6/Code/test_Valetudo.py", line 165, in model_definition
+    model.load_state_dict(torch.load('model_{}.pt'.format(NICKNAME), map_location=device))
+  File "/usr/local/lib/python3.12/dist-packages/torch/nn/modules/module.py", line 2189, in load_state_dict
+    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
+RuntimeError: Error(s) in loading state_dict for CNN:
+        Unexpected key(s) in state_dict: "conv0.weight", "conv0.bias", "bn0.weight", "bn0.bias", "bn0.running_mean", "bn0.running_var", "bn0.num_batches_tracked". 
+        size mismatch for conv1.weight: copying a param with shape torch.Size([16, 8, 3, 3]) from checkpoint, the shape in current model is torch.Size([16, 3, 3, 3]).
+ubuntu@ip-10-0-24-233:~/Exam2-v6/Code$ python3 test_Valetudo.py --path /home/ubuntu/Exam2-v6 --split test
+Testing the Model: 100%|██████████████████████████████████████████████████████████████████████████████| 1466/1466 [00:27<00:00, 53.71it/s, Test Loss: 0.25370]
+ -  Test f1_macro 0.21993 Test avg 0.10996
+ubuntu@ip-10-0-24-233:~/Exam2-v6/Code$ 

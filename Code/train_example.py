@@ -37,7 +37,7 @@ sep = os.path.sep
 
 os.chdir(OR_PATH) # Come back to the directory where the code resides , all files will be left on this directory
 
-n_epoch = 2
+n_epoch = 7
 BATCH_SIZE = 30
 LR = 0.001
 

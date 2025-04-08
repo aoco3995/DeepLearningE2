@@ -55,7 +55,12 @@ class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
 
-        self.conv1 = nn.Conv2d(3, 16, (3, 3))
+        # New conv0 layer: big 10x10 kernel, RGB input → 8 output feature maps
+        self.conv0 = nn.Conv2d(3, 8, kernel_size=(10, 10), padding=4)
+        self.bn0 = nn.BatchNorm2d(8)
+
+        # conv1 now expects 8 input channels instead of 3
+        self.conv1 = nn.Conv2d(8, 16, (3, 3))
         self.convnorm1 = nn.BatchNorm2d(16)
         self.pad1 = nn.ZeroPad2d(2)
 
@@ -66,9 +71,13 @@ class CNN(nn.Module):
         self.act = torch.relu
 
     def forward(self, x):
-        x = self.pad1(self.convnorm1(self.act(self.conv1(x))))
-        x = self.act(self.conv2(self.act(x)))
-        return self.linear(self.global_avg_pool(x).view(-1, 128))
+        # Run through new conv0 first
+        x = self.act(self.bn0(self.conv0(x)))  # [B, 8, H, W]
+
+        # Then the rest of your original model
+        x = self.pad1(self.convnorm1(self.act(self.conv1(x))))  # [B, 16, H, W]
+        x = self.act(self.conv2(self.act(x)))                   # [B, 128, H, W]
+        return self.linear(self.global_avg_pool(x).view(-1, 128))  # [B, OUTPUTS_a]
 
 
 #------------------------------------------------------------------------------------------------------------------
