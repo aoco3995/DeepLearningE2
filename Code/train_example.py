@@ -14,6 +14,7 @@ from torchvision import transforms
 from torchvision import models
 from tqdm import tqdm
 import os
+from collections import Counter
 
 
 '''
@@ -54,11 +55,20 @@ SAVE_MODEL = True
 
 #---- Define the model ---- #
 
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
 
-        self.conv1 = nn.Conv2d(3, 16, (3, 3))
+        # New conv0 layer: big 10x10 kernel, RGB input → 8 output feature maps
+        self.conv0 = nn.Conv2d(3, 8, kernel_size=(10, 10), padding=4)
+        self.bn0 = nn.BatchNorm2d(8)
+
+        # conv1 now expects 8 input channels instead of 3
+        self.conv1 = nn.Conv2d(8, 16, (3, 3))
         self.convnorm1 = nn.BatchNorm2d(16)
         self.pad1 = nn.ZeroPad2d(2)
 
@@ -69,9 +79,13 @@ class CNN(nn.Module):
         self.act = torch.relu
 
     def forward(self, x):
-        x = self.pad1(self.convnorm1(self.act(self.conv1(x))))
-        x = self.act(self.conv2(self.act(x)))
-        return self.linear(self.global_avg_pool(x).view(-1, 128))
+        # Run through new conv0 first
+        x = self.act(self.bn0(self.conv0(x)))  # [B, 8, H, W]
+
+        # Then the rest of your original model
+        x = self.pad1(self.convnorm1(self.act(self.conv1(x))))  # [B, 16, H, W]
+        x = self.act(self.conv2(self.act(x)))                   # [B, 128, H, W]
+        return self.linear(self.global_avg_pool(x).view(-1, 128))  # [B, OUTPUTS_a]
 
 class Dataset(data.Dataset):
     '''
@@ -497,6 +511,35 @@ if __name__ == '__main__':
     class_names = process_target(target_type = 2)
 
     ## Comment
+
+    # # Step 1: Count how many times each class appears in the 'target' column
+    # class_counts = {cls: xdf_data['target'].str.contains(rf'\b{cls}\b', regex=True, na=False).sum() for cls in
+    #                 class_names}
+    #
+    # # Step 2: Use the max value as the target sample count
+    # #SAMPLES_PER_CLASS = max(class_counts.values())
+    # SAMPLES_PER_CLASS = 2000
+    #
+    # print(f"📊 Max samples for any class: {SAMPLES_PER_CLASS}")
+    #
+    # # Step 3: Build the balanced dataset
+    # subset_list = []
+    #
+    # for cls in class_names:
+    #     # Filter rows that contain this class
+    #     filtered = xdf_data[xdf_data['target'].str.contains(rf'\b{cls}\b', regex=True, na=False)]
+    #
+    #     if len(filtered) < SAMPLES_PER_CLASS:
+    #         print(f"⚠️ {cls} has only {len(filtered)} rows — oversampling to reach {SAMPLES_PER_CLASS}")
+    #         filtered_sample = filtered.sample(SAMPLES_PER_CLASS, replace=True, random_state=42)
+    #     else:
+    #         filtered_sample = filtered.sample(SAMPLES_PER_CLASS, random_state=42)
+    #
+    #     subset_list.append(filtered_sample)
+    #
+    # # Step 4: Combine all samples into a new DataFrame
+    # xdf_data_balanced = pd.concat(subset_list).reset_index(drop=True)
+
 
     xdf_dset = xdf_data[xdf_data["split"] == 'train'].copy()
 
