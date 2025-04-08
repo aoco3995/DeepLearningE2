@@ -64,11 +64,11 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
 
         # New conv0 layer: big 10x10 kernel, RGB input → 8 output feature maps
-        self.conv0 = nn.Conv2d(3, 8, kernel_size=(10, 10), padding=4)
-        self.bn0 = nn.BatchNorm2d(8)
+        self.conv0 = nn.Conv2d(3, 10, kernel_size=(5, 5), padding=2)
+        self.bn0 = nn.BatchNorm2d(10)
 
         # conv1 now expects 8 input channels instead of 3
-        self.conv1 = nn.Conv2d(8, 16, (3, 3))
+        self.conv1 = nn.Conv2d(10, 16, (3, 3))
         self.convnorm1 = nn.BatchNorm2d(16)
         self.pad1 = nn.ZeroPad2d(2)
 
