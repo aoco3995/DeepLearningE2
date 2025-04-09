@@ -43,7 +43,7 @@ LR = 0.001
 
 ## Image processing
 CHANNELS = 3
-IMAGE_SIZE = 100
+IMAGE_SIZE = 400
 
 NICKNAME = "Valetudo"
 
@@ -63,28 +63,29 @@ class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
 
-        # New conv0 layer: big 10x10 kernel, RGB input → 8 output feature maps
-        self.conv0 = nn.Conv2d(3, 10, kernel_size=(5, 5), padding=2)
-        self.bn0 = nn.BatchNorm2d(10)
+        # convA: Big initial kernel
+        self.convA = nn.Conv2d(3, 10, kernel_size=(10, 10), padding=5, stride=(2, 2))
+        self.bnA = nn.BatchNorm2d(10)
 
-        # conv1 now expects 8 input channels instead of 3
-        self.conv1 = nn.Conv2d(10, 16, (3, 3))
+        # conv0: Refines features from convA
+        self.conv0 = nn.Conv2d(10, 10, kernel_size=(5, 5), padding=2)
+        self.bn0 = nn.BatchNorm2d(10)  # ✅ match conv0's output channels
+
+        # conv1: expects input from conv0
+        self.conv1 = nn.Conv2d(10, 16, (3, 3))  # ✅ now from 10 channels
         self.convnorm1 = nn.BatchNorm2d(16)
         self.pad1 = nn.ZeroPad2d(2)
 
         self.conv2 = nn.Conv2d(16, 128, (3, 3))
         self.global_avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-
         self.linear = nn.Linear(128, OUTPUTS_a)
         self.act = torch.relu
 
     def forward(self, x):
-        # Run through new conv0 first
-        x = self.act(self.bn0(self.conv0(x)))  # [B, 8, H, W]
-
-        # Then the rest of your original model
-        x = self.pad1(self.convnorm1(self.act(self.conv1(x))))  # [B, 16, H, W]
-        x = self.act(self.conv2(self.act(x)))                   # [B, 128, H, W]
+        x = self.act(self.bnA(self.convA(x)))      # [B, 20, 400, 400]
+        x = self.act(self.bn0(self.conv0(x)))      # [B, 10, 400, 400]
+        x = self.pad1(self.convnorm1(self.act(self.conv1(x))))  # [B, 16, 404, 404]
+        x = self.act(self.conv2(self.act(x)))      # [B, 128, ..., ...]
         return self.linear(self.global_avg_pool(x).view(-1, 128))  # [B, OUTPUTS_a]
 
 class Dataset(data.Dataset):
