@@ -64,7 +64,7 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
 
         # convA: Big initial kernel
-        self.convA = nn.Conv2d(3, 10, kernel_size=(10, 10), padding=5, stride=(2, 2))
+        self.convA = nn.Conv2d(3, 10, kernel_size=(5,5), padding=2, stride=(2, 2))
         self.bnA = nn.BatchNorm2d(10)
 
         # conv0: Refines features from convA

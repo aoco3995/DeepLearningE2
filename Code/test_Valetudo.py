@@ -56,15 +56,15 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
 
         # convA: Big initial kernel
-        self.convA = nn.Conv2d(3, 10, kernel_size=(10, 10), padding=5, stride=(2, 2))
+        self.convA = nn.Conv2d(3, 10, kernel_size=(5,5), padding=2, stride=(2, 2))
         self.bnA = nn.BatchNorm2d(10)
 
         # conv0: Refines features from convA
         self.conv0 = nn.Conv2d(10, 10, kernel_size=(5, 5), padding=2)
-        self.bn0 = nn.BatchNorm2d(10) 
+        self.bn0 = nn.BatchNorm2d(10)  # ✅ match conv0's output channels
 
         # conv1: expects input from conv0
-        self.conv1 = nn.Conv2d(10, 16, (3, 3))
+        self.conv1 = nn.Conv2d(10, 16, (3, 3))  # ✅ now from 10 channels
         self.convnorm1 = nn.BatchNorm2d(16)
         self.pad1 = nn.ZeroPad2d(2)
 
