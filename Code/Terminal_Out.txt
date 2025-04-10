@@ -1,21 +1,29 @@
-📊 Max samples for any class: 60000
-⚠️ class1 has only 56425 rows — oversampling to reach 60000
-⚠️ class10 has only 55411 rows — oversampling to reach 60000
-⚠️ class12 has only 2071 rows — oversampling to reach 60000
-⚠️ class15 has only 4586 rows — oversampling to reach 60000
-⚠️ class16 has only 710 rows — oversampling to reach 60000
-⚠️ class2 has only 30430 rows — oversampling to reach 60000
-⚠️ class3 has only 3031 rows — oversampling to reach 60000
-⚠️ class5 has only 2457 rows — oversampling to reach 60000
-⚠️ class7 has only 907 rows — oversampling to reach 60000
-⚠️ class8 has only 26403 rows — oversampling to reach 60000
-⚠️ class9 has only 9111 rows — oversampling to reach 60000
-Epoch 0: 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 34000/34000 [41:45<00:00, 13.57it/s, Test Loss: 0.36604]
-Epoch 0: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [01:09<00:00, 21.03it/s, Test Loss: 0.28341]
-Epoch 0:  Train f1_macro 0.17232 Train avg 0.08616 -  Test f1_macro 0.23002 Test avg 0.11501
+ubuntu@ip-10-0-24-233:~/Exam2-v6/Code$ python3 train_example.py
+📊 Max samples for any class: 184356
+⚠️ class1 has only 56425 rows — oversampling to reach 184356
+⚠️ class10 has only 55411 rows — oversampling to reach 184356
+⚠️ class11 has only 113129 rows — oversampling to reach 184356
+⚠️ class12 has only 2071 rows — oversampling to reach 184356
+⚠️ class13 has only 105899 rows — oversampling to reach 184356
+⚠️ class14 has only 99637 rows — oversampling to reach 184356
+⚠️ class15 has only 4586 rows — oversampling to reach 184356
+⚠️ class16 has only 710 rows — oversampling to reach 184356
+⚠️ class2 has only 30430 rows — oversampling to reach 184356
+⚠️ class3 has only 3031 rows — oversampling to reach 184356
+⚠️ class4 has only 180964 rows — oversampling to reach 184356
+⚠️ class5 has only 2457 rows — oversampling to reach 184356
+⚠️ class6 has only 88821 rows — oversampling to reach 184356
+⚠️ class7 has only 907 rows — oversampling to reach 184356
+⚠️ class8 has only 26403 rows — oversampling to reach 184356
+⚠️ class9 has only 9111 rows — oversampling to reach 184356
+Epoch 0: 100%|##########| 104469/104469 [4:01:52<00:00,  7.20it/s, Test Loss: 0.35004]
+Epoch 0: 100%|##########| 1466/1466 [01:40<00:00, 14.63it/s, Test Loss: 0.27260]
+Epoch 0:  Train f1_macro 0.22511 Train avg 0.11255 -  Test f1_macro 0.28955 Test avg 0.14478
 The model has been saved!
+Epoch 1: 100%|##########| 104469/104469 [4:55:32<00:00,  5.89it/s, Test Loss: 0.33198]
+Epoch 1: 100%|##########| 1466/1466 [02:25<00:00, 10.11it/s, Test Loss: 0.27480]
+Epoch 1:  Train f1_macro 0.29062 Train avg 0.14531 -  Test f1_macro 0.26826 Test avg 0.13413
 ubuntu@ip-10-0-24-233:~/Exam2-v6/Code$ python3 test_Valetudo.py --path /home/ubuntu/Exam2-v6 --split test
-Testing the Model: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [00:26<00:00, 55.25it/s, Test Loss: 467.37894]
- -  Test f1_macro 0.10475 Test avg 0.05238
+Testing the Model: 100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1466/1466 [00:26<00:00, 55.41it/s, Test Loss: 608.86379]
+ -  Test f1_macro 0.15198 Test avg 0.07599
 ubuntu@ip-10-0-24-233:~/Exam2-v6/Code$
-

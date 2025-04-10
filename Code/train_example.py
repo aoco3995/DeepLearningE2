@@ -16,6 +16,23 @@ from tqdm import tqdm
 import os
 from collections import Counter
 
+import sys
+
+class Tee:
+    def __init__(self, *streams):
+        self.streams = streams
+    def write(self, data):
+        for stream in self.streams:
+            stream.write(data)
+            stream.flush()
+    def flush(self):
+        for stream in self.streams:
+            stream.flush()
+
+log_file = open("output_log.txt", "w")
+sys.stdout = Tee(sys.stdout, log_file)
+sys.stderr = Tee(sys.stderr, log_file)  # optional: capture errors too
+
 
 '''
 LAST UPDATED 11/10/2021, lsdr
@@ -37,7 +54,7 @@ sep = os.path.sep
 
 os.chdir(OR_PATH) # Come back to the directory where the code resides , all files will be left on this directory
 
-n_epoch = 1
+n_epoch = 2
 BATCH_SIZE = 30
 LR = 0.001
 
@@ -526,8 +543,8 @@ if __name__ == '__main__':
                     class_names}
 
     # Step 2: Use the max value as the target sample count
-    #SAMPLES_PER_CLASS = max(class_counts.values())
-    SAMPLES_PER_CLASS = 60000
+    SAMPLES_PER_CLASS = max(class_counts.values())
+    #SAMPLES_PER_CLASS = 100
 
     print(f"📊 Max samples for any class: {SAMPLES_PER_CLASS}")
 
