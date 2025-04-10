@@ -37,13 +37,13 @@ sep = os.path.sep
 
 os.chdir(OR_PATH) # Come back to the directory where the code resides , all files will be left on this directory
 
-n_epoch = 7
+n_epoch = 1
 BATCH_SIZE = 30
 LR = 0.001
 
 ## Image processing
 CHANNELS = 3
-IMAGE_SIZE = 400
+IMAGE_SIZE = 100
 
 NICKNAME = "Valetudo"
 
@@ -63,16 +63,12 @@ class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
 
-        # convA: Big initial kernel
-        self.convA = nn.Conv2d(3, 10, kernel_size=(5,5), padding=2, stride=(2, 2))
-        self.bnA = nn.BatchNorm2d(10)
-
         # conv0: Refines features from convA
-        self.conv0 = nn.Conv2d(10, 10, kernel_size=(5, 5), padding=2)
-        self.bn0 = nn.BatchNorm2d(10)  # ✅ match conv0's output channels
+        self.conv0 = nn.Conv2d(3, 3, kernel_size=(5, 5), padding=3)
+        self.bn0 = nn.BatchNorm2d(3)  # ✅ match conv0's output channels
 
         # conv1: expects input from conv0
-        self.conv1 = nn.Conv2d(10, 16, (3, 3))  # ✅ now from 10 channels
+        self.conv1 = nn.Conv2d(3, 16, (3, 3))
         self.convnorm1 = nn.BatchNorm2d(16)
         self.pad1 = nn.ZeroPad2d(2)
 
@@ -82,8 +78,6 @@ class CNN(nn.Module):
         self.act = torch.relu
 
     def forward(self, x):
-        x = self.act(self.bnA(self.convA(x)))      # [B, 20, 400, 400]
-        x = self.act(self.bn0(self.conv0(x)))      # [B, 10, 400, 400]
         x = self.pad1(self.convnorm1(self.act(self.conv1(x))))  # [B, 16, 404, 404]
         x = self.act(self.conv2(self.act(x)))      # [B, 128, ..., ...]
         return self.linear(self.global_avg_pool(x).view(-1, 128))  # [B, OUTPUTS_a]
@@ -143,6 +137,16 @@ class Dataset(data.Dataset):
         X = torch.FloatTensor(img)
 
         X = torch.reshape(X, (3, IMAGE_SIZE, IMAGE_SIZE))
+
+        transform = transforms.Compose([
+            transforms.ToPILImage(),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.RandomResizedCrop(IMAGE_SIZE, scale=(0.8, 1.0)),
+            transforms.RandomRotation(degrees=15),
+            transforms.ToTensor()
+        ])
+
+        X = transform(img)
 
         return X, y
 
@@ -513,38 +517,37 @@ if __name__ == '__main__':
 
     ## Comment
 
-    # # Step 1: Count how many times each class appears in the 'target' column
-    # class_counts = {cls: xdf_data['target'].str.contains(rf'\b{cls}\b', regex=True, na=False).sum() for cls in
-    #                 class_names}
-    #
-    # # Step 2: Use the max value as the target sample count
-    # #SAMPLES_PER_CLASS = max(class_counts.values())
-    # SAMPLES_PER_CLASS = 2000
-    #
-    # print(f"📊 Max samples for any class: {SAMPLES_PER_CLASS}")
-    #
-    # # Step 3: Build the balanced dataset
-    # subset_list = []
-    #
-    # for cls in class_names:
-    #     # Filter rows that contain this class
-    #     filtered = xdf_data[xdf_data['target'].str.contains(rf'\b{cls}\b', regex=True, na=False)]
-    #
-    #     if len(filtered) < SAMPLES_PER_CLASS:
-    #         print(f"⚠️ {cls} has only {len(filtered)} rows — oversampling to reach {SAMPLES_PER_CLASS}")
-    #         filtered_sample = filtered.sample(SAMPLES_PER_CLASS, replace=True, random_state=42)
-    #     else:
-    #         filtered_sample = filtered.sample(SAMPLES_PER_CLASS, random_state=42)
-    #
-    #     subset_list.append(filtered_sample)
-    #
-    # # Step 4: Combine all samples into a new DataFrame
-    # xdf_data_balanced = pd.concat(subset_list).reset_index(drop=True)
-
-
     xdf_dset = xdf_data[xdf_data["split"] == 'train'].copy()
 
     xdf_dset_test= xdf_data[xdf_data["split"] == 'test'].copy()
+
+    # Step 1: Count how many times each class appears in the 'target' column
+    class_counts = {cls: xdf_dset['target'].str.contains(rf'\b{cls}\b', regex=True, na=False).sum() for cls in
+                    class_names}
+
+    # Step 2: Use the max value as the target sample count
+    #SAMPLES_PER_CLASS = max(class_counts.values())
+    SAMPLES_PER_CLASS = 60000
+
+    print(f"📊 Max samples for any class: {SAMPLES_PER_CLASS}")
+
+    # Step 3: Build the balanced dataset
+    subset_list = []
+
+    for cls in class_names:
+        # Filter rows that contain this class
+        filtered = xdf_dset[xdf_dset['target'].str.contains(rf'\b{cls}\b', regex=True, na=False)]
+
+        if len(filtered) < SAMPLES_PER_CLASS:
+            print(f"⚠️ {cls} has only {len(filtered)} rows — oversampling to reach {SAMPLES_PER_CLASS}")
+            filtered_sample = filtered.sample(SAMPLES_PER_CLASS, replace=True, random_state=42)
+        else:
+            filtered_sample = filtered.sample(SAMPLES_PER_CLASS, random_state=42)
+
+        subset_list.append(filtered_sample)
+
+    # Step 4: Combine all samples into a new DataFrame
+    xdf_dset = pd.concat(subset_list).reset_index(drop=True)
 
     ## read_data creates the dataloaders, take target_type = 2
 

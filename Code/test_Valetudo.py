@@ -55,16 +55,12 @@ class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
 
-        # convA: Big initial kernel
-        self.convA = nn.Conv2d(3, 10, kernel_size=(5,5), padding=2, stride=(2, 2))
-        self.bnA = nn.BatchNorm2d(10)
-
         # conv0: Refines features from convA
-        self.conv0 = nn.Conv2d(10, 10, kernel_size=(5, 5), padding=2)
-        self.bn0 = nn.BatchNorm2d(10)  # ✅ match conv0's output channels
+        self.conv0 = nn.Conv2d(3, 3, kernel_size=(5, 5), padding=2)
+        self.bn0 = nn.BatchNorm2d(3)  # ✅ match conv0's output channels
 
         # conv1: expects input from conv0
-        self.conv1 = nn.Conv2d(10, 16, (3, 3))  # ✅ now from 10 channels
+        self.conv1 = nn.Conv2d(3, 16, (3, 3))
         self.convnorm1 = nn.BatchNorm2d(16)
         self.pad1 = nn.ZeroPad2d(2)
 
@@ -74,8 +70,6 @@ class CNN(nn.Module):
         self.act = torch.relu
 
     def forward(self, x):
-        x = self.act(self.bnA(self.convA(x)))      # [B, 20, 400, 400]
-        x = self.act(self.bn0(self.conv0(x)))      # [B, 10, 400, 400]
         x = self.pad1(self.convnorm1(self.act(self.conv1(x))))  # [B, 16, 404, 404]
         x = self.act(self.conv2(self.act(x)))      # [B, 128, ..., ...]
         return self.linear(self.global_avg_pool(x).view(-1, 128))  # [B, OUTPUTS_a]
